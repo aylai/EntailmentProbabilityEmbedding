@@ -28,5 +28,8 @@ params = {
     'learning_rate': 0.001,
 }
 
-os.chdir(params['run_dir'])
+tmp_dir = DIR+'tmp/'
+if not os.path.exists(tmp_dir):
+    os.makedirs(tmp_dir)
+
 probability_model.run(**params)
