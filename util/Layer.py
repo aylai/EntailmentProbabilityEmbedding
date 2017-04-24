@@ -6,7 +6,7 @@ class Layers:
     """
     Helper class for quickly creating NN layers with different initializations
     """
-    tf.set_random_seed(20160906)
+    tf.set_random_seed(20160408)
 
     def W(self, input_dim=100, output_dim=100, name='W', init='Xavier', trainable=True):
         if init == 'Normal':

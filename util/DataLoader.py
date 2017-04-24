@@ -1,6 +1,9 @@
 import numpy as np
 import gzip
 
+label_map = {'entailment': 0, 'neutral': 1, 'contradiction': 2}
+
+
 class DataLoader:
 
     # Read probability files: pairs of phrases/sentences with p(x), p(y), p(x|y) values
@@ -48,6 +51,59 @@ class DataLoader:
         return s1, s2, np.array(pr_x), np.array(pr_y), np.array(pr_xy), np.array(cpr_xy), np.array(l1), np.array(
             l2), max_length, p1, p2, labels
 
+    def read_entail(self, s, word_to_index):
+        s1 = []
+        s2 = []
+        labels = []
+        l1 = []
+        l2 = []
+        max_length = 0
+        for line in open(s):
+            if line.startswith("gold_label") or line.startswith("-"):
+                continue
+            tokens = line.strip().split("\t")
+            t1 = []
+            for a in tokens[5].split():
+                if a in word_to_index:
+                    t1.append(word_to_index[a])
+                else:
+                    t1.append(word_to_index['oov'])
+            s1.append(t1)
+            t2 = []
+            for a in tokens[6].split():
+                if a in word_to_index:
+                    t2.append(word_to_index[a])
+                else:
+                    t2.append(word_to_index['oov'])
+            s2.append(t2)
+            l1.append(len(t1))
+            l2.append(len(t2))
+            labels.append(label_map[tokens[0]])
+            max_length = max(max_length, len(t1))
+            max_length = max(max_length, len(t2))
+        return s1, s2, np.array(labels), np.array(l1), np.array(l2), max_length
+
+    def read_feat_probabilities(self, s):
+        features = []
+        labels = []
+        num_features = 1
+        usePMI = False
+        useCpr2 = False
+        for line in open(s):
+            features_temp = []
+            tokens = line.strip().split("\t")
+            if usePMI:
+                features_temp.append(float(tokens[3]))  # PMI
+            features_temp.append(float(tokens[4]))  # pr(H|P)
+            if useCpr2:
+                features_temp.append(float(tokens[5]))  # pr(P|H)
+            label = tokens[-1]
+            if label == "-":
+                continue # skip unannotated items
+            features.append(features_temp)
+            labels.append(label_map[label])
+        return np.array(features), np.array(labels), num_features
+
     def read_glove_vectors(self, file):
         matrix = []
         embedding_size = 0
@@ -79,3 +135,9 @@ class DataLoader:
                 del temp_line[-1]
             padded_data.append(temp_line)
         return np.array(padded_data)
+
+    def pad_labels(self, labels):
+        L = np.zeros(shape=[len(labels), 3], dtype=np.float32)
+        for idx, label in enumerate(labels):
+            L[idx][label] = 1
+        return L
