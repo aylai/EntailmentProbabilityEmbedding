@@ -38,7 +38,7 @@ params = {
     'phase': phase, # intermed or classifier
 }
 
-tmp_dir = DIR+'tmp/'
+tmp_dir = DIR+'/tmp/'
 if not os.path.exists(tmp_dir):
     os.makedirs(tmp_dir)
 

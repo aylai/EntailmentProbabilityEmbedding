@@ -28,7 +28,9 @@ params = {
     'learning_rate': 0.001,
 }
 
-tmp_dir = DIR+'tmp/'
+tmp_dir = DIR+'/tmp/'
+print tmp_dir
+print os.path.exists(tmp_dir)
 if not os.path.exists(tmp_dir):
     os.makedirs(tmp_dir)
 
