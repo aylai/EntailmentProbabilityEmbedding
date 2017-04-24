@@ -10,30 +10,30 @@ dirname, filename = os.path.split(os.path.abspath(__file__))
 DIR = "/".join(dirname.split("/")[:-1])
 params = {
     'run_dir': DIR,
-    'exp_name_lstm': 'isa_0',
-    'exp_name_full': 'cat_0',
-    'data_dir': 'snli_100',
+    'exp_name_lstm': 'lstm',
+    'exp_name_full': 'concat',
+    'data_dir': 'snli',
 
     'train_prob_data': 'snli_predict_dev_99.txt',
     'test_prob_data': 'snli_predict_dev_99.txt',
     'dev_prob_data': 'snli_predict_dev_99.txt',
 
-    'train_entail_data': 'snli_1.0_dev.txt',
-    'test_entail_data': 'snli_1.0_dev.txt',
+    'train_entail_data': 'snli_1.0_train.txt',
+    'test_entail_data': 'snli_1.0_test.txt',
     'dev_entail_data': 'snli_1.0_dev.txt',
 
     'vector_file': 'glove.ALL.txt.gz',
 
     'method': 'train',  # 'train' or 'test'
 
-    'batch_size': 10,
+    'batch_size': 512,
     'hidden_dim': 100,  # hidden dim of LSTM
-    'dropout_lstm': 0.5,  # 1 = no dropout, 0.5 = dropout
+    'dropout_lstm': 0.85,  # 1 = no dropout, 0.5 = dropout
 
-    'dropout_cpr': 0.5,
+    'dropout_cpr': 0.8,
     'output_dim_cpr': 300,
 
-    'num_epochs': 1,
+    'num_epochs': 10,
 
     'phase': phase, # intermed or classifier
 }
