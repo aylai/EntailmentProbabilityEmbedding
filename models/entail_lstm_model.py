@@ -57,7 +57,7 @@ def run(**args):
         output_dim = 2 * args['hidden_dim']
 
         lstm = tf.nn.rnn_cell.LSTMCell(args['hidden_dim'], state_is_tuple=True)
-        lstm = tf.nn.rnn_cell.DropoutWrapper(lstm, output_keep_prob=dropout_ph)
+        lstm = tf.nn.rnn_cell.DropoutWrapper(lstm, output_keep_prob=0.85)
 
         Wemb1 = tf.nn.embedding_lookup(embeddings, inputs1)
         Wemb2 = tf.nn.embedding_lookup(embeddings, inputs2)
@@ -68,11 +68,11 @@ def run(**args):
 
         output_layer1 = Layer.W(2 * args['hidden_dim'], output_dim, 'Output1')
         output_bias1  = Layer.b(output_dim, 'OutputBias1')
-        logits1 = tf.nn.dropout(tf.nn.tanh(tf.matmul(tf.concat(1, [fstate1[0], fstate2[0]]), output_layer1) + output_bias1), dropout_ph)
+        logits1 = tf.nn.dropout(tf.nn.tanh(tf.matmul(tf.concat(1, [fstate1[0], fstate2[0]]), output_layer1)) + output_bias1, 0.85)
 
         output_layer2 = Layer.W(output_dim, output_dim, 'Output2')
         output_bias2  = Layer.b(output_dim, 'OutputBias2')
-        logits2 = tf.nn.dropout(tf.nn.tanh(tf.matmul(logits1, output_layer2) + output_bias2), dropout_ph)
+        logits2 = tf.nn.dropout(tf.nn.tanh(tf.matmul(logits1, output_layer2) + output_bias2), 0.85)
 
         output_layer3 = Layer.W(output_dim, num_classes, 'Output3')
         output_bias3  = Layer.b(num_classes, 'OutputBias3')
