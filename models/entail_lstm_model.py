@@ -79,7 +79,8 @@ def run(**args):
         logits3 = tf.matmul(logits2, output_layer3) + output_bias3
 
         prediction = tf.argmax(logits3, 1)
-        loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits3, labels))
+        # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits3, labels))
+        loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(logits3, labels))
 
     optimizer = tf.train.AdamOptimizer(0.001, 0.9)
     varlist = graph.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='lstm')
