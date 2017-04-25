@@ -76,7 +76,7 @@ def run(**args):
 
         output_layer3 = Layer.W(output_dim, num_classes, 'Output3')
         output_bias3  = Layer.b(num_classes, 'OutputBias3')
-        logits3 = tf.matmul(logits2, output_layer3) + output_bias3
+        logits3 = tf.nn.tanh(tf.matmul(logits2, output_layer3) + output_bias3)
 
         prediction = tf.argmax(logits3, 1)
         # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits3, labels))
