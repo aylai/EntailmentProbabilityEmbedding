@@ -18,9 +18,9 @@ params = {
     'test_prob_data': 'snli_predict_dev_99.txt',
     'dev_prob_data': 'snli_predict_dev_99.txt',
 
-    'train_entail_data': 'snli_1.0_train.txt',
-    'test_entail_data': 'snli_1.0_test.txt',
-    'dev_entail_data': 'snli_1.0_dev.txt',
+    'train_entail_data': 'snli_1.0_train_trim.txt',
+    'test_entail_data': 'snli_1.0_test_trim.txt',
+    'dev_entail_data': 'snli_1.0_dev_trim.txt',
 
     'vector_file': 'glove.ALL.txt.gz',
 

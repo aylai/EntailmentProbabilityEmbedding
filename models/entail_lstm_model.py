@@ -28,13 +28,13 @@ def run(**args):
     num_classes = 3
 
     # entailment data
-    # train_1, train_2, train_labels, train_lens1, train_lens2, maxlength = Sparse.read_entail(data_dir + args['train_entail_data'], index)
-    # dev_1, dev_2, dev_labels, dev_lens1, dev_lens2, _ = Sparse.read_entail(data_dir + args['dev_entail_data'], index)
-    # test_1, test_2, test_labels, test_lens1, test_lens2, _ = Sparse.read_entail(data_dir + args['test_entail_data'], index)
-    train_1, train_2, train_labels, train_lens1, train_lens2, vocabsize, maxlength = Sparse.gzread_entail(
-        data_dir + args['train_entail_data'])
-    dev_1, dev_2, dev_labels, dev_lens1, dev_lens2, _, _ = Sparse.gzread_entail(data_dir + args['dev_entail_data'])
-    test_1, test_2, test_labels, test_lens1, test_lens2, _, _ = Sparse.gzread_entail(data_dir + args['test_entail_data'])
+    train_1, train_2, train_labels, train_lens1, train_lens2, maxlength = Sparse.read_entail(data_dir + args['train_entail_data'], index)
+    dev_1, dev_2, dev_labels, dev_lens1, dev_lens2, _ = Sparse.read_entail(data_dir + args['dev_entail_data'], index)
+    test_1, test_2, test_labels, test_lens1, test_lens2, _ = Sparse.read_entail(data_dir + args['test_entail_data'], index)
+    # train_1, train_2, train_labels, train_lens1, train_lens2, vocabsize, maxlength = Sparse.gzread_entail(
+    #     data_dir + args['train_entail_data'])
+    # dev_1, dev_2, dev_labels, dev_lens1, dev_lens2, _, _ = Sparse.gzread_entail(data_dir + args['dev_entail_data'])
+    # test_1, test_2, test_labels, test_lens1, test_lens2, _, _ = Sparse.gzread_entail(data_dir + args['test_entail_data'])
 
     training_1 = Sparse.pad_tensor(train_1, maxlength)
     development_1 = Sparse.pad_tensor(dev_1, maxlength)
