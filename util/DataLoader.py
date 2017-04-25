@@ -1,5 +1,7 @@
 import numpy as np
 import gzip
+from nltk import word_tokenize
+
 
 label_map = {'entailment': 0, 'neutral': 1, 'contradiction': 2}
 
@@ -76,7 +78,6 @@ class DataLoader:
             max_length = max(max_length, len(t2))
         return s1, s2, np.array(labels), np.array(l1), np.array(l2), v, max_length
 
-
     def read_entail(self, s, word_to_index):
         s1 = []
         s2 = []
@@ -89,14 +90,16 @@ class DataLoader:
                 continue
             tokens = line.strip().split("\t")
             t1 = []
-            for a in tokens[5].split():
+            for a in word_tokenize(tokens[5]):
+                a = a.lower()
                 if a in word_to_index:
                     t1.append(word_to_index[a])
                 else:
                     t1.append(word_to_index['oov'])
             s1.append(t1)
             t2 = []
-            for a in tokens[6].split():
+            for a in word_tokenize(tokens[6]):
+                a = a.lower()
                 if a in word_to_index:
                     t2.append(word_to_index[a])
                 else:

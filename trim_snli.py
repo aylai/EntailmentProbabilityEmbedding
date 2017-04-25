@@ -5,6 +5,7 @@ for s in splits:
     out_file = open('data/snli/snli_1.0_'+s+'_trim.txt', 'w')
     for line in in_file:
         if not line.startswith("-"):
+            line = line.lower()
             out_file.write(line)
     in_file.close()
     out_file.close()
