@@ -28,9 +28,13 @@ def run(**args):
     num_classes = 3
 
     # entailment data
-    train_1, train_2, train_labels, train_lens1, train_lens2, maxlength = Sparse.read_entail(data_dir + args['train_entail_data'], index)
-    dev_1, dev_2, dev_labels, dev_lens1, dev_lens2, _ = Sparse.read_entail(data_dir + args['dev_entail_data'], index)
-    test_1, test_2, test_labels, test_lens1, test_lens2, _ = Sparse.read_entail(data_dir + args['test_entail_data'], index)
+    # train_1, train_2, train_labels, train_lens1, train_lens2, maxlength = Sparse.read_entail(data_dir + args['train_entail_data'], index)
+    # dev_1, dev_2, dev_labels, dev_lens1, dev_lens2, _ = Sparse.read_entail(data_dir + args['dev_entail_data'], index)
+    # test_1, test_2, test_labels, test_lens1, test_lens2, _ = Sparse.read_entail(data_dir + args['test_entail_data'], index)
+    train_1, train_2, train_labels, train_lens1, train_lens2, vocabsize, maxlength = Sparse.gzread_entail(
+        data_dir + args['train_entail_data'])
+    dev_1, dev_2, dev_labels, dev_lens1, dev_lens2, _, _ = Sparse.gzread_entail(data_dir + args['dev_entail_data'])
+    test_1, test_2, test_labels, test_lens1, test_lens2, _, _ = Sparse.gzread_entail(data_dir + args['test_entail_data'])
 
     training_1 = Sparse.pad_tensor(train_1, maxlength)
     development_1 = Sparse.pad_tensor(dev_1, maxlength)
@@ -57,7 +61,7 @@ def run(**args):
         output_dim = 2 * args['hidden_dim']
 
         lstm = tf.nn.rnn_cell.LSTMCell(args['hidden_dim'], state_is_tuple=True)
-        lstm = tf.nn.rnn_cell.DropoutWrapper(lstm, output_keep_prob=0.85)
+        lstm = tf.nn.rnn_cell.DropoutWrapper(lstm, output_keep_prob=dropout_ph)
 
         Wemb1 = tf.nn.embedding_lookup(embeddings, inputs1)
         Wemb2 = tf.nn.embedding_lookup(embeddings, inputs2)
@@ -68,19 +72,19 @@ def run(**args):
 
         output_layer1 = Layer.W(2 * args['hidden_dim'], output_dim, 'Output1')
         output_bias1  = Layer.b(output_dim, 'OutputBias1')
-        logits1 = tf.nn.dropout(tf.nn.tanh(tf.matmul(tf.concat(1, [fstate1[0], fstate2[0]]), output_layer1)) + output_bias1, 0.85)
+        logits1 = tf.nn.dropout(tf.nn.tanh(tf.matmul(tf.concat(1, [fstate1[0], fstate2[0]]), output_layer1) + output_bias1), dropout_ph)
 
         output_layer2 = Layer.W(output_dim, output_dim, 'Output2')
         output_bias2  = Layer.b(output_dim, 'OutputBias2')
-        logits2 = tf.nn.dropout(tf.nn.tanh(tf.matmul(logits1, output_layer2) + output_bias2), 0.85)
+        logits2 = tf.nn.dropout(tf.nn.tanh(tf.matmul(logits1, output_layer2) + output_bias2), dropout_ph)
 
         output_layer3 = Layer.W(output_dim, num_classes, 'Output3')
         output_bias3  = Layer.b(num_classes, 'OutputBias3')
-        logits3 = tf.nn.tanh(tf.matmul(logits2, output_layer3) + output_bias3)
+        logits3 = tf.matmul(logits2, output_layer3) + output_bias3
 
         prediction = tf.argmax(logits3, 1)
         # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits3, labels))
-        loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(logits3, labels))
+        loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits3, labels))
 
     optimizer = tf.train.AdamOptimizer(0.001, 0.9)
     varlist = graph.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='lstm')
