@@ -9,7 +9,7 @@ np.set_printoptions(threshold=np.nan)
 from util.Layer import Layers
 from util.Train_entail_lstm import Training
 from util.DataLoader import DataLoader
-Sparse = DataLoader()
+Data = DataLoader()
 Layer = Layers()
 sys.path.append(".")
 
@@ -24,27 +24,23 @@ def run(**args):
 
     # Read Training/Dev/Test data
     data_dir = 'data/' + args['data_dir'] + '/'
-    np_matrix, index = Sparse.read_glove_vectors('data/' + args['data_dir'] + '/' + args['vector_file'])
+    np_matrix, index = Data.read_glove_vectors('data/' + args['data_dir'] + '/' + args['vector_file'])
     num_classes = 3
 
     # entailment data
-    train_1, train_2, train_labels, train_lens1, train_lens2, maxlength = Sparse.read_entail(data_dir + args['train_entail_data'], index)
-    dev_1, dev_2, dev_labels, dev_lens1, dev_lens2, _ = Sparse.read_entail(data_dir + args['dev_entail_data'], index)
-    test_1, test_2, test_labels, test_lens1, test_lens2, _ = Sparse.read_entail(data_dir + args['test_entail_data'], index)
-    # train_1, train_2, train_labels, train_lens1, train_lens2, vocabsize, maxlength = Sparse.gzread_entail(
-    #     data_dir + args['train_entail_data'])
-    # dev_1, dev_2, dev_labels, dev_lens1, dev_lens2, _, _ = Sparse.gzread_entail(data_dir + args['dev_entail_data'])
-    # test_1, test_2, test_labels, test_lens1, test_lens2, _, _ = Sparse.gzread_entail(data_dir + args['test_entail_data'])
+    train_1, train_2, train_labels, train_lens1, train_lens2, maxlength = Data.read_entail(data_dir + args['train_entail_data'], index)
+    dev_1, dev_2, dev_labels, dev_lens1, dev_lens2, _ = Data.read_entail(data_dir + args['dev_entail_data'], index)
+    test_1, test_2, test_labels, test_lens1, test_lens2, _ = Data.read_entail(data_dir + args['test_entail_data'], index)
 
-    training_1 = Sparse.pad_tensor(train_1, maxlength)
-    development_1 = Sparse.pad_tensor(dev_1, maxlength)
-    testing_1 = Sparse.pad_tensor(test_1, maxlength)
-    training_2 = Sparse.pad_tensor(train_2, maxlength)
-    development_2 = Sparse.pad_tensor(dev_2, maxlength)
-    testing_2 = Sparse.pad_tensor(test_2, maxlength)
-    training_labels = Sparse.pad_labels(train_labels)
-    development_labels = Sparse.pad_labels(dev_labels)
-    testing_labels = Sparse.pad_labels(test_labels)
+    training_1 = Data.pad_tensor(train_1, maxlength)
+    development_1 = Data.pad_tensor(dev_1, maxlength)
+    testing_1 = Data.pad_tensor(test_1, maxlength)
+    training_2 = Data.pad_tensor(train_2, maxlength)
+    development_2 = Data.pad_tensor(dev_2, maxlength)
+    testing_2 = Data.pad_tensor(test_2, maxlength)
+    training_labels = Data.pad_labels(train_labels)
+    development_labels = Data.pad_labels(dev_labels)
+    testing_labels = Data.pad_labels(test_labels)
 
     # Input -> LSTM -> Outstate
     dropout_ph = tf.placeholder(tf.float32)
@@ -83,8 +79,7 @@ def run(**args):
         logits3 = tf.matmul(logits2, output_layer3) + output_bias3
 
         prediction = tf.argmax(logits3, 1)
-        # loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits3, labels))
-        loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits3, labels))
+        loss = tf.reduce_sum(tf.nn.softmax_cross_entropy_with_logits(logits3, labels))
 
     optimizer = tf.train.AdamOptimizer(0.001, 0.9)
     varlist = graph.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, scope='lstm')

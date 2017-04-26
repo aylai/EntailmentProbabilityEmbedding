@@ -1,7 +1,7 @@
 import tensorflow as tf
 import numpy as np
 import math
-tf.set_random_seed(20160906)
+tf.set_random_seed(20160408)
 
 
 def probability(m):

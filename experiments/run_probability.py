@@ -29,8 +29,6 @@ params = {
 }
 
 tmp_dir = DIR+'/tmp/'
-print tmp_dir
-print os.path.exists(tmp_dir)
 if not os.path.exists(tmp_dir):
     os.makedirs(tmp_dir)
 

@@ -1,3 +1,6 @@
+# Train entailment prediction model by appending predicted probability
+# features from file to output of previously trained LSTM model
+
 import random
 import sys
 import time
@@ -7,7 +10,7 @@ np.set_printoptions(threshold=np.nan)
 from util.Layer import Layers
 from util.Train_entail_prob import Training
 from util.DataLoader import DataLoader
-Sparse = DataLoader()
+Data = DataLoader()
 Layer = Layers()
 sys.path.append(".")
 
@@ -15,36 +18,36 @@ sys.path.append(".")
 def run(**args):
 
     random.seed(20160408)
-    tf.set_random_seed(20160906)
+    tf.set_random_seed(20160408)
     graph = tf.get_default_graph()
     start_time = time.time()
 
     # Read Training/Dev/Test data
     data_dir = 'data/' + args['data_dir'] + '/'
-    np_matrix, index = Sparse.read_glove_vectors('data/' + args['data_dir'] + '/' + args['vector_file'])
+    np_matrix, index = Data.read_glove_vectors('data/' + args['data_dir'] + '/' + args['vector_file'])
     num_classes = 3
 
-    train_features, train_cpr_labels, num_features = Sparse.read_feat_probabilities(data_dir + args['train_prob_data'])
-    dev_features, dev_cpr_labels, _ = Sparse.read_feat_probabilities(data_dir + args['dev_prob_data'])
-    test_features, test_cpr_labels, _ = Sparse.read_feat_probabilities(data_dir + args['test_prob_data'])
+    train_features, train_cpr_labels, num_features = Data.read_feat_probabilities(data_dir + args['train_prob_data'])
+    dev_features, dev_cpr_labels, _ = Data.read_feat_probabilities(data_dir + args['dev_prob_data'])
+    test_features, test_cpr_labels, _ = Data.read_feat_probabilities(data_dir + args['test_prob_data'])
 
     # entailment data
-    train_1_entail, train_2_entail, train_entail_labels, train_lens1_entail, train_lens2_entail, maxlength = Sparse.read_entail(
+    train_1_entail, train_2_entail, train_entail_labels, train_lens1_entail, train_lens2_entail, maxlength = Data.read_entail(
         data_dir + args['train_entail_data'], index)
-    dev_1_entail, dev_2_entail, dev_entail_labels, dev_lens1_entail, dev_lens2_entail, _ = Sparse.read_entail(
+    dev_1_entail, dev_2_entail, dev_entail_labels, dev_lens1_entail, dev_lens2_entail, _ = Data.read_entail(
         data_dir + args['dev_entail_data'], index)
-    test_1_entail, test_2_entail, test_entail_labels, test_lens1_entail, test_lens2_entail, _ = Sparse.read_entail(
+    test_1_entail, test_2_entail, test_entail_labels, test_lens1_entail, test_lens2_entail, _ = Data.read_entail(
         data_dir + args['test_entail_data'], index)
 
-    training_1_entail = Sparse.pad_tensor(train_1_entail, maxlength)
-    development_1_entail = Sparse.pad_tensor(dev_1_entail, maxlength)
-    testing_1_entail = Sparse.pad_tensor(test_1_entail, maxlength)
-    training_2_entail = Sparse.pad_tensor(train_2_entail, maxlength)
-    development_2_entail = Sparse.pad_tensor(dev_2_entail, maxlength)
-    testing_2_entail = Sparse.pad_tensor(test_2_entail, maxlength)
-    training_entail_labels = Sparse.pad_labels(train_entail_labels)
-    development_entail_labels = Sparse.pad_labels(dev_entail_labels)
-    testing_entail_labels = Sparse.pad_labels(test_entail_labels)
+    training_1_entail = Data.pad_tensor(train_1_entail, maxlength)
+    development_1_entail = Data.pad_tensor(dev_1_entail, maxlength)
+    testing_1_entail = Data.pad_tensor(test_1_entail, maxlength)
+    training_2_entail = Data.pad_tensor(train_2_entail, maxlength)
+    development_2_entail = Data.pad_tensor(dev_2_entail, maxlength)
+    testing_2_entail = Data.pad_tensor(test_2_entail, maxlength)
+    training_entail_labels = Data.pad_labels(train_entail_labels)
+    development_entail_labels = Data.pad_labels(dev_entail_labels)
+    testing_entail_labels = Data.pad_labels(test_entail_labels)
 
     # Input -> LSTM -> Outstate
     dropout_lstm_ph = tf.placeholder(tf.float32)
@@ -143,8 +146,6 @@ def run(**args):
                 s2 = [str(a) for a in testing_2_entail[idx]]
                 out_file.write("%s\t%s\t%s\t%s\n" % (testing_entail_labels[idx], pred, " ".join(s1), " ".join(s2)))
             out_file.close()
-            print len(predictions)
-            print accuracy
             print("Accuracy: %f" % (100.0*sum(predictions)/len(predictions)))
             print("--- %s seconds ---" % (time.time() - start_time))
 

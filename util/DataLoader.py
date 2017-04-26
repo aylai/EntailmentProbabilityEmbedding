@@ -53,31 +53,7 @@ class DataLoader:
         return s1, s2, np.array(pr_x), np.array(pr_y), np.array(pr_xy), np.array(cpr_xy), np.array(l1), np.array(
             l2), max_length, p1, p2, labels
 
-
-    ## Read sparse arrays
-    def gzread_entail(self, s):
-        s1 = []
-        s2 = []
-        labels = []
-        v = 0
-        l1 = []
-        l2 = []
-        max_length = 0
-        for line in gzip.open(s):
-            tokens = line.strip().split("\t")
-            t1 = [int(a) for a in tokens[0].split()]
-            v = max(v, max(t1))
-            s1.append(t1)
-            t2 = [int(a) for a in tokens[1].split()]
-            v = max(v, max(t2))
-            s2.append(t2)
-            l1.append(len(t1))
-            l2.append(len(t2))
-            labels.append(int(tokens[2]))
-            max_length = max(max_length, len(t1))
-            max_length = max(max_length, len(t2))
-        return s1, s2, np.array(labels), np.array(l1), np.array(l2), v, max_length
-
+    # Read SNLI txt files
     def read_entail(self, s, word_to_index):
         s1 = []
         s2 = []
@@ -112,6 +88,7 @@ class DataLoader:
             max_length = max(max_length, len(t2))
         return s1, s2, np.array(labels), np.array(l1), np.array(l2), max_length
 
+    # Read predicted probabilities for pairs of phrases/sentences
     def read_feat_probabilities(self, s):
         features = []
         labels = []

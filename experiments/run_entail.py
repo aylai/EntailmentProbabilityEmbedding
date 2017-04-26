@@ -14,13 +14,13 @@ params = {
     'exp_name_full': 'concat',
     'data_dir': 'snli',
 
-    'train_prob_data': 'snli_predict_dev_99.txt',
-    'test_prob_data': 'snli_predict_dev_99.txt',
-    'dev_prob_data': 'snli_predict_dev_99.txt',
+    'train_prob_data': 'snli_predict_train.txt',
+    'test_prob_data': 'snli_predict_test.txt',
+    'dev_prob_data': 'snli_predict_dev.txt',
 
-    'train_entail_data': 'snli_1.0_train_trim.txt',
-    'test_entail_data': 'snli_1.0_test_trim.txt',
-    'dev_entail_data': 'snli_1.0_dev_trim.txt',
+    'train_entail_data': 'snli_1.0_train.txt',
+    'test_entail_data': 'snli_1.0_test.txt',
+    'dev_entail_data': 'snli_1.0_dev.txt',
 
     'vector_file': 'glove.ALL.txt.gz',
 
@@ -49,6 +49,7 @@ if params['phase'] == 'lstm':
 
 elif params['phase'] == 'lstm_plus_feat':
 
-    # Train entailment prediction model by appending predicted probability features from file to output of previously trained LSTM model
+    # Train entailment prediction model by appending predicted probability
+    # features from file to output of previously trained LSTM model
     entail_prob_model.run(**params)
 
